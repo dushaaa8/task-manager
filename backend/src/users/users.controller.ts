@@ -7,6 +7,7 @@ import {
 } from "@nestjs/common";
 import { JwtAuthGuard } from "../auth/jwt/jwt-auth.guard";
 import { UsersService } from "./users.service";
+import { RequestWithUser } from "../request.interface";
 
 @Controller("users")
 export class UsersController {
@@ -14,7 +15,7 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Get("me")
-  async getMe(@Request() req) {
+  async getMe(@Request() req: RequestWithUser) {
     const user = await this.usersService.findById(req.user.userId);
 
     if (!user) {

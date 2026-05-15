@@ -1,0 +1,226 @@
+{
+  "info": {
+    "_postman_id": "1b69528c-7a14-471b-98a3-6d5b2bcfaa97",
+    "name": "Task Manager",
+    "description": "The **Task Manager** collection covers the full lifecycle of a task management REST API running on `localhost:3000`. It is organized into two functional areas:\n\n**Authentication**\n- `POST /auth/register` — Create a new user account.\n- `POST /auth/login` — Authenticate and retrieve an access token.\n\n**Task Management**\n- `POST /tasks` — Create a new task for the authenticated user.\n- `GET /tasks` — Retrieve all tasks belonging to the authenticated user.\n- `GET /tasks/:id` — Fetch a single task by its ID.\n- `PATCH /tasks/:id` — Update an existing task.\n- `DELETE /tasks/:id` — Delete a task.\n- `GET /tasks/:id` *(Get Deleted Task)* — Verify that a deleted task is no longer accessible.\n\n**Error Handling**\n- `GET /tasks/` *(Unauthorized Request)* — Demonstrates the `401 Unauthorized` response returned when a request is made without a valid token.\n\nUse this collection to develop, test, and validate the Task Manager API — from user registration and login through full CRUD operations on tasks, including authentication enforcement.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "54803908",
+    "_collection_link": "https://go.postman.co/collection/54803908-1b69528c-7a14-471b-98a3-6d5b2bcfaa97?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Register",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"email\": \"test@test.com\",\r\n    \"name\": \"test\",\r\n    \"password\": \"test\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/auth/register",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["auth", "register"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"email\": \"test@test.com\",\r\n    \"password\": \"test123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/auth/login",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["auth", "login"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Task",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"title\": \"Test title 2 \",\r\n  \"description\": \"Test description 2 \"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/tasks",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["tasks"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get My Tasks",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "Get My Task By Id",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "http://localhost:3000/tasks/ca5259bf-2e9a-4b59-b119-da076bdf9e7e",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["tasks", "ca5259bf-2e9a-4b59-b119-da076bdf9e7e"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Task",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"title\": \"Edited title!\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/tasks/ca5259bf-2e9a-4b59-b119-da076bdf9e7e",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["tasks", "ca5259bf-2e9a-4b59-b119-da076bdf9e7e"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Task",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/tasks/5dd69788-d03e-4464-956e-14ac99710691",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["tasks", "5dd69788-d03e-4464-956e-14ac99710691"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Deleted Task",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "http://localhost:3000/tasks/5dd69788-d03e-4464-956e-14ac99710691",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["tasks", "5dd69788-d03e-4464-956e-14ac99710691"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Unauthorized Request",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "http://localhost:3000/tasks/",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["tasks", ""]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [""]
+      }
+    }
+  ]
+}
