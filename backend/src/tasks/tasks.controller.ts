@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Delete,
+  Query,
 } from "@nestjs/common";
 import { JwtAuthGuard } from "../auth/jwt/jwt-auth.guard";
 import { TasksService } from "./tasks.service";
@@ -21,6 +22,7 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { TaskEntity } from "./entities/task.entity";
+import { GetTasksFilterDto } from "./dto/get-task-filter.dto";
 
 @ApiTags("Tasks")
 @ApiBearerAuth()
@@ -50,8 +52,11 @@ export class TasksController {
     description: "Tasks succeccful recieved",
     type: [TaskEntity],
   })
-  findAll(@Request() req: RequestWithUser) {
-    return this.tasksService.findAll(req.user.userId);
+  findAll(
+    @Query() filterDto: GetTasksFilterDto,
+    @Request() req: RequestWithUser,
+  ) {
+    return this.tasksService.findAll(req.user.userId, filterDto);
   }
 
   @Get(":id")

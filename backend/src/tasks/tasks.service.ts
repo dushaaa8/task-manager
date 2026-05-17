@@ -6,6 +6,7 @@ import {
 import { PrismaService } from "../prisma.service";
 import { CreateTaskDto } from "./dto/create-task.dto";
 import { UpdateTaskDto } from "./dto/update-task.dto";
+import { GetTasksFilterDto, SortOrder } from "./dto/get-task-filter.dto";
 
 @Injectable()
 export class TasksService {
@@ -19,8 +20,20 @@ export class TasksService {
       },
     });
   }
-  async findAll(userId: string) {
-    return this.prisma.task.findMany({ where: { userId } });
+  async findAll(userId: string, dto: GetTasksFilterDto) {
+    const { status, priority, sortBy, sortOrder, search } = dto;
+    const orderBy = sortBy
+      ? { [sortBy]: sortOrder }
+      : { createdAt: SortOrder.DESC };
+    return this.prisma.task.findMany({
+      where: {
+        userId,
+        status,
+        priority,
+        title: search ? { contains: search, mode: "insensitive" } : undefined,
+      },
+      orderBy,
+    });
   }
   async findCurrent(userId: string, taskId: string) {
     const task = await this.prisma.task.findUnique({ where: { id: taskId } });
