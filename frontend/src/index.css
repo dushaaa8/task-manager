@@ -1,1 +1,19 @@
 @import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Anuphan:wght@100..700&display=swap");
+
+@theme {
+  --color-primary-blue: #3754db;
+  --color-primary-dark: #16171d;
+  --color-primary-yellow: #fccd65;
+  --color-primary-wine: #b80020;
+  --color-primary-light-gray: #6e7391;
+  --color-primary-dark-gray: #2c2e3a;
+
+  --color-semantic-error-red: #fb151a;
+  --color-semantic-warning-yellow: #eba300;
+  --color-semantic-info-blue: #6684ff;
+  --color-semantic-success-green: #00c271;
+}
+:root {
+  font-family: var(--font-anuphan), sans-serif;
+}
