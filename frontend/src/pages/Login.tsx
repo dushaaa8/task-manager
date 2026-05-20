@@ -1,12 +1,13 @@
-import React from "react";
+import { Link, useNavigate } from "react-router-dom";
 import AuthBg from "../components/ui/AuthBg";
-import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
+import Input from "../components/ui/Input";
 
 export default function Login() {
+  const navigate = useNavigate();
   return (
-    <div className="w-full h-screen flex justify-between items-center p-2">
-      <form action="submit" className="ml-[20%] w-96 h-110">
+    <div className="w-full h-screen flex lg:justify-between justify-center items-center overflow-hidden overscroll-none">
+      <form action="submit" className="lg:ml-[20%] lg:w-96 md:w-[70%]">
         <h2 className="font-semibold text-2xl pb-8">Welocme back.</h2>
 
         <div className="pb-20">
@@ -17,7 +18,7 @@ export default function Login() {
             helperText="Example: mano@gmail.com"
           />
           <Input
-            className="w-[90%]"
+            className="lg:w-[90%] mb-4"
             label="Enter your password"
             type="password"
             helperText="Upto 8 characters with an Uppercase, symbol and number"
@@ -46,14 +47,36 @@ export default function Login() {
               </svg>
             }
           />
+          <Link className="underline lg:hidden" to={"/register"}>
+            Dont have an account?
+          </Link>
         </div>
 
-        <Button className="w-1/2 " size="xl" onClick={() => alert("Loggined!")}>
+        <Button
+          className="w-full lg:w-auto"
+          size="xl"
+          onClick={() => alert("Loggined!")}
+        >
           Log in
         </Button>
       </form>
-      <div className="h-full">
-        <AuthBg className="h-full w-auto" />
+      <div className="h-screen relative md:max-w-1/2 hidden lg:flex">
+        <AuthBg className="h-full w-auto z-0 relative p-2" />
+        <div className="flex flex-col absolute w-[90%] z-10 items-end top-6">
+          <Button
+            size="lg"
+            variant="secondary"
+            onClick={() => navigate("/register")}
+          >
+            Create Account
+          </Button>
+          <h1 className="text-white lg:text-6xl md:text-5xl w-[90%] text-right pt-59 md:pt-79">
+            Take your productivity to the next level.
+          </h1>
+          <h2 className="text-white text-xl w-[90%] text-right pt-59 md:pt-69">
+            Copyright 2021 | All rights reserved
+          </h2>
+        </div>
       </div>
     </div>
   );
