@@ -5,15 +5,17 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   helperText?: string;
   error?: string;
   iconRight?: React.ReactNode;
+  iconRightFunc?: () => void;
 }
 
-const Input = forwardRef<HTMLInputElement, InputProps>(
+export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
     {
       label,
       helperText,
       error,
       iconRight,
+      iconRightFunc,
       className = "",
       disabled,
       id,
@@ -56,10 +58,14 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             className={inputStyles}
             {...props}
           />
-          {iconRight && (
-            <div className="absolute right-3 text-primary-light-gray flex items-center justify-center">
+          {iconRight && iconRightFunc && (
+            <button
+              type="button"
+              onClick={iconRightFunc}
+              className="absolute right-3 text-primary-light-gray flex items-center justify-center cursor-pointer"
+            >
               {iconRight}
-            </div>
+            </button>
           )}
         </div>
         {error ? (

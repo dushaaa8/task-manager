@@ -23,11 +23,10 @@ export default function Button({
 
   const variantStyles = {
     primary:
-      "bg-primary-blue text-white  disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed border border-transparent",
+      "bg-primary-blue text-white  disabled:opacity-20 disabled:cursor-not-allowed border border-transparent",
     secondary:
-      "bg-white border-2 border-primary-blue text-primary-blue hover:bg-blue-50 disabled:border-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed",
-    tertiary:
-      "bg-white text-primary-blue hover:bg-blue-50 disabled:text-gray-400 disabled:cursor-not-allowed border border-transparent",
+      "bg-white border-2 border-primary-blue text-primary-blue hover:bg-blue-50 disabled:opacity-20 disabled:cursor-not-allowed",
+    tertiary: "bg-white text-primary-blue hover:bg-blue-50",
   };
 
   return (

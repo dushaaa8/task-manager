@@ -1,9 +1,8 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
-import ProtectedRoute from "./components/ProtectedRoute";
-import Profile from "./pages/Profile";
+import Tasks from "./pages/Tasks";
 
 function App() {
   return (
@@ -11,15 +10,9 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route
-          path="/tasks"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/tasks" element={<Tasks />} />
+        </Route>
 
         <Route path="*" element={<Navigate to="/tasks" replace />} />
       </Routes>
