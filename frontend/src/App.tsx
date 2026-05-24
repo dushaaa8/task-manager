@@ -3,6 +3,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Tasks from "./pages/Tasks";
+import MainLayout from "./components/layout/MainLayout";
 
 function App() {
   return (
@@ -11,7 +12,11 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route element={<ProtectedRoute />}>
-          <Route path="/tasks" element={<Tasks />} />
+          <Route element={<MainLayout />}>
+            <Route path="/tasks" element={<Tasks />} />
+            <Route path="/profile" element={<div>Profile Page</div>} />
+            <Route path="/settings" element={<div>Settings Page</div>} />
+          </Route>
         </Route>
 
         <Route path="*" element={<Navigate to="/tasks" replace />} />

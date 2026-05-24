@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import AuthBg from "../ui/AuthBg";
 import Button from "../ui/Button";
 
-interface AuthProps {
+interface Props {
   isLoginPage: boolean;
 }
 
@@ -28,7 +28,7 @@ const bannerConfig = {
   },
 } as const;
 
-export default function AuthBanner({ isLoginPage }: AuthProps) {
+export default function AuthBanner({ isLoginPage }: Props) {
   const navigate = useNavigate();
   const config = isLoginPage ? bannerConfig.login : bannerConfig.register;
 

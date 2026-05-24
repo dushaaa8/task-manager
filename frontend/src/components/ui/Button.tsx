@@ -1,6 +1,6 @@
 import React from "react";
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "tertiary";
   size?: "sm" | "lg" | "xl";
 }
@@ -11,9 +11,9 @@ export default function Button({
   className = "",
   children,
   ...props
-}: ButtonProps) {
+}: Props) {
   const baseStyles =
-    "flex items-center justify-center rounded-xl hover:scale-101 font-medium transition-all outline-none";
+    "flex items-center justify-center rounded-xl hover:scale-105 font-medium transition-all outline-none";
 
   const sizeStyles = {
     sm: "h-10 px-18 text-xs",

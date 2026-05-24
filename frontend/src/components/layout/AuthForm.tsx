@@ -3,10 +3,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { login, register } from "../../api/auth";
 import Button from "../ui/Button";
 import Input from "../ui/Input";
-import PasswordToggleIcon from "../ui/PasswordToggleIcon";
+import PasswordToggleIcon from "../ui/icons/PasswordToggleIcon";
 import { authFormConfig, type AuthFormMode } from "./authFormConfig";
 
-interface AuthFormProps {
+interface Props {
   mode: AuthFormMode;
 }
 
@@ -16,7 +16,7 @@ const initialFormData = {
   password: "",
 };
 
-export default function AuthForm({ mode }: AuthFormProps) {
+export default function AuthForm({ mode }: Props) {
   const config = authFormConfig[mode];
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
