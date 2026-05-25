@@ -1,7 +1,11 @@
 import { Link } from "react-router-dom";
 import Button from "../ui/Button";
+import Calendar from "../ui/Calendar";
 
 export default function RightSidebar() {
+  const handleDateFilter = (date: Date) => {
+    console.log("Selected date", date.toISOString());
+  };
   return (
     <aside className="w-67 m-5 bg-white rounded-3xl flex flex-col items-center pt-24">
       <div className="flex flex-col items-center relative">
@@ -21,11 +25,12 @@ export default function RightSidebar() {
           namesurname@gmail.com
         </h2>
         <Link to="/profile">
-          <Button size="sm" className="px-4!">
+          <Button size="sm" className="px-4! mb-14">
             My Profile
           </Button>
         </Link>
       </div>
+      <Calendar onDateSelect={handleDateFilter} />
     </aside>
   );
 }
