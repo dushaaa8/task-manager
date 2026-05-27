@@ -1,7 +1,7 @@
-import NavIconOverview from "./icons/NavIconOverview";
-import NavIconSettings from "./icons/NavIconSettings";
-import NavIconTasks from "./icons/NavIconTasks";
-import NavItem from "./NavItem";
+import NavIconOverview from "../ui/icons/NavIconOverview";
+import NavIconSettings from "../ui/icons/NavIconSettings";
+import NavIconTasks from "../ui/icons/NavIconTasks";
+import NavItem from "../ui/NavItem";
 
 export default function MainNav() {
   return (

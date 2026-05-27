@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import url("https://fonts.googleapis.com/css2?family=Anuphan:wght@100..700&display=swap");
 
 @theme {
   --color-primary-blue: #3754db;
@@ -18,7 +17,4 @@
   --color-semantic-warning-yellow: #eba300;
   --color-semantic-info-blue: #6684ff;
   --color-semantic-success-green: #00c271;
-}
-:root {
-  font-family: var(--font-anuphan), sans-serif;
 }

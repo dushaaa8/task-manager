@@ -48,7 +48,7 @@ export default function AuthForm({ mode }: Props) {
         password: formData.password,
       });
 
-      localStorage.setItem("token", data.token);
+      localStorage.setItem("token", data.access_token);
       navigate("/tasks");
     } catch (err: any) {
       setError(err.response?.data?.message || "Auth error");
