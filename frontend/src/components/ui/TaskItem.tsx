@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import TaskViewBtnIcon from "./icons/TaskViewBtnIcon";
 
 export type TaskStatus = "todo" | "in_progress" | "done";
+export type TasksPriority = "low" | "medium" | "high";
 
 interface ITaskCardProps {
   index: number;

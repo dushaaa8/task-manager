@@ -19,8 +19,8 @@ export default function EmptyTasksPlaceholder() {
           You have no task created in your workspace yet. Get productive. Create
           a Task Now.
         </p>
+        <Button size="xl">Create task</Button>
       </div>
-      <Button size="xl">Create task</Button>
     </div>
   );
 }

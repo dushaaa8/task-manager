@@ -1,18 +1,27 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ArrowBtn from "./icons/ArrowBtnIcon";
 
 interface Props {
   onDateSelect?: (date: Date) => void;
+  selected?: Date;
 }
 
-export default function Calendar({ onDateSelect }: Props) {
+export default function Calendar({ onDateSelect, selected }: Props) {
   const available =
     "text-[11px] font-medium text-secondary-gray rounded-sm text-center p-1 cursor-pointer hover:bg-gray-200";
   const disabled =
     "text-[11px] font-medium text-[#BFBFBF] text-center cursor-not-allowed p-1";
 
-  const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [currentMonth, setCurrentMonth] = useState(selected || new Date());
+  const [selectedDate, setSelectedDate] = useState(selected || new Date());
+
+  useEffect(() => {
+    if (selected) {
+      setSelectedDate(selected);
+      setCurrentMonth(selected);
+    }
+  }, [selected]);
+
   const monthName = currentMonth.toLocaleString("en-US", { month: "long" });
 
   const year = currentMonth.getFullYear();
@@ -44,7 +53,6 @@ export default function Calendar({ onDateSelect }: Props) {
     const newSelectedDate = new Date(year, month, day);
     setSelectedDate(newSelectedDate);
 
-    // Передаем дату родительскому компоненту (чтобы отфильтровать таски)
     if (onDateSelect) {
       onDateSelect(newSelectedDate);
     }

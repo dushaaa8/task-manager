@@ -1,7 +1,7 @@
-import { Outlet } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 
-import { useQuery } from "@tanstack/react-query";
-import { api } from "../../api/api";
+import { useState } from "react";
+import { useUser } from "../../hooks/useUser";
 import LoadingSpinner from "../ui/LoadingSpinner";
 import LeftSidebar from "./LeftSidebar";
 import MainHeader from "./MainHeader";
@@ -12,14 +12,11 @@ export interface IUserResponse {
   name: string;
 }
 
-export default function MainLayout() {
-  const { data: user, isLoading } = useQuery<IUserResponse>({
-    queryKey: ["me"],
-    queryFn: async () => {
-      const response = await api.get("/users/me");
-      return response.data;
-    },
-  });
+export function MainLayout() {
+  const { data: user, isLoading } = useUser();
+  const [selectedDate, setSelectedDate] = useState<string>(() =>
+    new Date().toISOString(),
+  );
   if (isLoading) {
     return (
       <div className="flex h-screen w-full bg-main-background-gray overflow-hidden">
@@ -27,19 +24,25 @@ export default function MainLayout() {
       </div>
     );
   }
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
 
-  if (user)
-    return (
-      <div className="flex h-screen w-full bg-main-background-gray overflow-hidden">
-        <LeftSidebar />
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <main className="flex-1 overflow-y-auto p-6">
-            <MainHeader />
-            <Outlet />
-          </main>
-        </div>
-
-        <RightSidebar name={user.name} email={user.email} />
+  return (
+    <div className="flex h-screen w-full bg-main-background-gray overflow-hidden">
+      <LeftSidebar />
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <main className="flex-1 overflow-y-auto p-6">
+          <MainHeader />
+          <Outlet context={selectedDate} />
+        </main>
       </div>
-    );
+
+      <RightSidebar
+        name={user.name}
+        email={user.email}
+        onDateChange={setSelectedDate}
+      />
+    </div>
+  );
 }

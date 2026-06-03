@@ -1,66 +1,85 @@
-import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { api } from "../api/api";
 import EmptyTasksPlaceholder from "../components/layout/EmptyTasksPlaceholder";
 import Button from "../components/ui/Button";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
+import Selector from "../components/ui/Selector";
+import {
+  TaskFormModal,
+  type TaskFormData,
+} from "../components/ui/TaskFormModal";
 import type { TaskStatus } from "../components/ui/TaskItem";
 import TaskItem from "../components/ui/TaskItem";
+import { useTasks } from "../hooks/useTasks";
 
-export interface ITaskResponse {
-  id: string;
-  title: string;
-  status: TaskStatus;
-}
+const sortOptions = [
+  { value: "createdAt-desc", label: "Newest First" },
+  { value: "createdAt-asc", label: "Oldest First" },
+  { value: "priority-desc", label: "Highest Priority" },
+  { value: "priority-asc", label: "Lowest Priority" },
+  { value: "title-asc", label: "Title (A-Z)" },
+  { value: "title-desc", label: "Title (Z-A)" },
+  { value: "updatedAt-desc", label: "Recently Updated" },
+];
 
 export const Tasks = () => {
-  const [activeTab, setActiveTab] = useState<TaskStatus | "all">("all");
+  const {
+    activeTab,
+    setActiveTab,
+    sortValue,
+    setSortValue,
+    counts,
+    displayedTasks,
+    isLoading,
+    isAbsolutelyEmpty,
+  } = useTasks();
 
-  const { data: allTasks = [], isLoading } = useQuery<ITaskResponse[]>({
-    queryKey: ["tasks"],
-    queryFn: async () => {
-      const response = await api.get("/tasks");
-      return response.data;
+  const queryClient = useQueryClient();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const createMutation = useMutation({
+    mutationFn: (newTask: TaskFormData) => api.post("/tasks", newTask),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      setIsModalOpen(false);
     },
   });
 
-  const counts = useMemo(
-    () => ({
-      all: allTasks.length,
-      todo: allTasks.filter((t) => t.status === "todo").length,
-      inProgress: allTasks.filter((t) => t.status === "in_progress").length,
-      done: allTasks.filter((t) => t.status === "done").length,
-    }),
-    [allTasks],
-  );
-
-  const displayedTasks = useMemo(() => {
-    if (activeTab === "all") return allTasks;
-    return allTasks.filter((task) => task.status === activeTab);
-  }, [allTasks, activeTab]);
+  const handleFormSubmit = (data: TaskFormData) => {
+    createMutation.mutate(data);
+  };
 
   if (isLoading) {
     return <LoadingSpinner />;
   }
 
-  if (allTasks.length === 0) {
+  if (isAbsolutelyEmpty) {
     return <EmptyTasksPlaceholder />;
   }
 
   return (
     <div className="min-h-screen p-12">
-      <div className="mb-8 flex items-end justify-between">
+      <div className="mb-10 flex items-end justify-between">
         <div>
           <h1 className="mb-2 text-3xl font-bold text-primary-dark-blue">
             Tasks
           </h1>
           <p className="text-secondary-gray">Your tasks in your space.</p>
         </div>
-        <Button size="lg">Create Task</Button>
+
+        <Button onClick={() => setIsModalOpen(true)}>Create Task</Button>
+
+        <TaskFormModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSubmit={handleFormSubmit}
+          isLoading={createMutation.isPending}
+        />
       </div>
 
-      <div className="flex justify-between w-full">
-        <div className="mb-8 flex gap-8 border-b border-gray-200">
+      <div className="flex justify-between w-full h-20 items-end mb-8">
+        <div className="flex gap-8 border-b border-gray-200">
           {[
             { id: "all", label: "All Tasks", count: counts.all },
             { id: "todo", label: "Pending", count: counts.todo },
@@ -76,7 +95,7 @@ export const Tasks = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as TaskStatus | "all")}
-                className={`flex items-center gap-2 border-b-2 pb-4 text-sm font-medium transition-all ${
+                className={`flex items-center gap-2 border-b-2 pb-4 text-sm font-medium transition-all cursor-pointer ${
                   isActive
                     ? "border-primary-blue text-primary-blue"
                     : "border-transparent text-secondary-gray"
@@ -96,7 +115,15 @@ export const Tasks = () => {
             );
           })}
         </div>
-        <div>selector here !</div>
+
+        <div className="w-88">
+          <Selector
+            label="Choose sort option"
+            options={sortOptions}
+            value={sortValue}
+            onChange={setSortValue}
+          />
+        </div>
       </div>
 
       {displayedTasks.length === 0 ? (
