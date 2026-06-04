@@ -7,7 +7,7 @@ import type { TasksPriority } from "./TaskItem";
 
 export interface TaskFormData {
   title: string;
-  priority: "high" | "medium" | "low";
+  priority: TasksPriority;
   dueDate: string;
   description: string;
 }

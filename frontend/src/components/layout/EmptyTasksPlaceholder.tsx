@@ -1,7 +1,11 @@
 import Button from "../ui/Button";
 import NoTasksFoundIcon from "../ui/icons/NoTasksFoundIcon";
 
-export default function EmptyTasksPlaceholder() {
+interface Props {
+  modalFunction: (status: boolean) => void;
+}
+
+export default function EmptyTasksPlaceholder({ modalFunction }: Props) {
   return (
     <div className="flex min-h-screen flex-col bg-main-background-gray p-12">
       <div className="mb-12">
@@ -19,7 +23,9 @@ export default function EmptyTasksPlaceholder() {
           You have no task created in your workspace yet. Get productive. Create
           a Task Now.
         </p>
-        <Button size="xl">Create task</Button>
+        <Button size="xl" onClick={() => modalFunction(true)}>
+          Create task
+        </Button>
       </div>
     </div>
   );

@@ -1,16 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { api } from "../api/api";
-import type { TaskStatus } from "../components/ui/TaskItem";
+import type { TasksPriority, TaskStatus } from "../components/ui/TaskItem";
 
 export interface ITaskResponse {
   id: string;
   title: string;
   status: TaskStatus;
+  priority: TasksPriority;
+  description: string;
   dueDate: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export const useTasks = () => {
+export const useTasksList = () => {
   const [activeTab, setActiveTab] = useState<TaskStatus | "all">("all");
   const [sortValue, setSortValue] = useState<string>("createdAt-desc");
 
@@ -50,4 +54,14 @@ export const useTasks = () => {
     isLoading,
     isAbsolutelyEmpty: allTasks.length === 0,
   };
+};
+
+export const useSingleTask = (id: string | undefined) => {
+  return useQuery<ITaskResponse>({
+    queryKey: ["task", id],
+    queryFn: async () => {
+      const response = await api.get(`/tasks/${id}`);
+      return response.data;
+    },
+  });
 };

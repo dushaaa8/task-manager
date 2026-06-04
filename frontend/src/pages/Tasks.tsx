@@ -1,6 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { api } from "../api/api";
 import EmptyTasksPlaceholder from "../components/layout/EmptyTasksPlaceholder";
 import Button from "../components/ui/Button";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
@@ -11,7 +9,8 @@ import {
 } from "../components/ui/TaskFormModal";
 import type { TaskStatus } from "../components/ui/TaskItem";
 import TaskItem from "../components/ui/TaskItem";
-import { useTasks } from "../hooks/useTasks";
+import { useTasksList } from "../hooks/useTasks";
+import { useCreateTask } from "../hooks/useTaskMutation";
 
 const sortOptions = [
   { value: "createdAt-desc", label: "Newest First" },
@@ -33,29 +32,35 @@ export const Tasks = () => {
     displayedTasks,
     isLoading,
     isAbsolutelyEmpty,
-  } = useTasks();
+  } = useTasksList();
 
-  const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const createMutation = useMutation({
-    mutationFn: (newTask: TaskFormData) => api.post("/tasks", newTask),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
-      setIsModalOpen(false);
-    },
-  });
+  const createMutation = useCreateTask();
 
   const handleFormSubmit = (data: TaskFormData) => {
-    createMutation.mutate(data);
+    createMutation.mutate(data, {
+      onSuccess: () => {
+        setIsModalOpen(false);
+      },
+    });
   };
-
   if (isLoading) {
     return <LoadingSpinner />;
   }
 
   if (isAbsolutelyEmpty) {
-    return <EmptyTasksPlaceholder />;
+    return (
+      <>
+        <EmptyTasksPlaceholder modalFunction={setIsModalOpen} />
+        <TaskFormModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSubmit={handleFormSubmit}
+          isLoading={createMutation.isPending}
+        />
+      </>
+    );
   }
 
   return (

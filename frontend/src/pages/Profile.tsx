@@ -6,7 +6,7 @@ import Button from "../components/ui/Button";
 import SuggestCreateTaskIcon from "../components/ui/icons/SuggestCreateTaskIcon";
 import TaskViewBtnIcon from "../components/ui/icons/TaskViewBtnIcon";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
-import TaskItem from "../components/ui/TaskItem"; // Твоя карточка задачи
+import TaskItem from "../components/ui/TaskItem";
 import type { ITaskResponse } from "../hooks/useTasks";
 import { useUser } from "../hooks/useUser";
 

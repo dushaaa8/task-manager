@@ -44,6 +44,7 @@ export default function Settings() {
           title="You are about to LogOut"
           description="You can always log on to your task manager and continue from where you left off."
           confirmText="Yes, Log Me Out"
+          undoText="No, This was a Mistake"
           onConfirm={handleLogout}
         />
       </div>

@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import AuthBg from "../ui/AuthBg";
+import AuthBg from "../ui/icons/AuthBg";
 import Button from "../ui/Button";
 
 interface Props {

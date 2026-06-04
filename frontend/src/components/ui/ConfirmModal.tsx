@@ -8,6 +8,7 @@ type Props = {
   title: string;
   description: string | React.ReactNode;
   confirmText: string;
+  undoText: string;
   onConfirm: () => void;
 };
 
@@ -17,6 +18,7 @@ export default function ConfirmModal({
   title,
   description,
   confirmText,
+  undoText,
   onConfirm,
 }: Props) {
   return (
@@ -24,7 +26,7 @@ export default function ConfirmModal({
       <p className="mb-8 text-secondary-gray">{description}</p>
 
       <div className="flex gap-5">
-        <Button onClick={onClose}>No, This was a Mistake</Button>
+        <Button onClick={onClose}>{undoText}</Button>
         <Button
           className={"bg-red-50 text-primary-wine! hover:bg-red-100"}
           onClick={() => {

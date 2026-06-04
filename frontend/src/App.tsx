@@ -4,8 +4,9 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import Register from "./pages/Register";
-import { Tasks } from "./pages/Tasks";
 import Settings from "./pages/Settings";
+import { TaskDetails } from "./pages/TaskDetails";
+import { Tasks } from "./pages/Tasks";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/tasks/:id" element={<TaskDetails />} />
           </Route>
         </Route>
 
