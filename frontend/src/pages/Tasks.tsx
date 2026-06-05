@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import EmptyTasksPlaceholder from "../components/layout/EmptyTasksPlaceholder";
 import Button from "../components/ui/Button";
+import NoTasksFoundIcon from "../components/ui/icons/NoTasksFoundIcon";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import Selector from "../components/ui/Selector";
 import {
@@ -9,8 +11,8 @@ import {
 } from "../components/ui/TaskFormModal";
 import type { TaskStatus } from "../components/ui/TaskItem";
 import TaskItem from "../components/ui/TaskItem";
-import { useTasksList } from "../hooks/useTasks";
 import { useCreateTask } from "../hooks/useTaskMutation";
+import { useTasksList } from "../hooks/useTasks";
 
 const sortOptions = [
   { value: "createdAt-desc", label: "Newest First" },
@@ -33,6 +35,13 @@ export const Tasks = () => {
     isLoading,
     isAbsolutelyEmpty,
   } = useTasksList();
+
+  const [searchParams] = useSearchParams();
+  const searchQuery = searchParams.get("search") || "";
+
+  const filteredTasks = displayedTasks.filter((task) => {
+    return task.title.toLowerCase().includes(searchQuery.toLowerCase());
+  });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -60,6 +69,20 @@ export const Tasks = () => {
           isLoading={createMutation.isPending}
         />
       </>
+    );
+  }
+  if (filteredTasks.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center pt-40 text-center">
+        <NoTasksFoundIcon />
+        <h2 className="text-2xl font-bold text-primary-dark-blue mb-2">
+          No tasks found
+        </h2>
+        <p className="text-secondary-gray">
+          We couldn't find any tasks matching{" "}
+          <strong className="text-primary-dark-blue">"{searchQuery}"</strong>
+        </p>
+      </div>
     );
   }
 
@@ -137,7 +160,7 @@ export const Tasks = () => {
         </div>
       ) : (
         <div className="grid gap-5 lg:grid-cols-5">
-          {displayedTasks.map((task, index) => (
+          {filteredTasks.map((task, index) => (
             <TaskItem
               key={task.id}
               id={task.id}
