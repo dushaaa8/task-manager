@@ -1,4 +1,4 @@
-import { TaskStatus, TaskPriority } from "@prisma/client";
+import { TaskPriority, TaskStatus } from "@prisma/client";
 import {
   IsDateString,
   IsEnum,
@@ -24,7 +24,7 @@ export class CreateTaskDto {
   @IsEnum(TaskPriority, { message: "Incorrect format priority" })
   priority?: TaskPriority;
 
-  @IsOptional()
   @IsDateString({}, { message: "Due date must be valid Date format" })
-  dueDate?: string;
+  @IsNotEmpty({ message: "Due date cannot be empty" })
+  dueDate!: string;
 }

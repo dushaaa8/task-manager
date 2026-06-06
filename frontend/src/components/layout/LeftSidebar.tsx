@@ -2,7 +2,7 @@ import MainNav from "./MainNav";
 
 export default function Sidebar() {
   return (
-    <aside className="w-70 h-full bg-white flex">
+    <aside className="w-50 lg:w-70 h-full bg-white flex">
       <div className="w-20 h-full bg-primary-blue pt-25">
         <div className="flex flex-col items-center gap-4">
           <img

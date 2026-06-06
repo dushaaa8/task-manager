@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { Task, TaskStatus, TaskPriority } from "@prisma/client";
+import { Task, TaskPriority, TaskStatus } from "@prisma/client";
 
 export class TaskEntity implements Task {
   @ApiProperty({
@@ -46,11 +46,11 @@ export class TaskEntity implements Task {
   })
   createdAt!: Date;
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     example: "2026-05-16T12:00:00.000Z",
     description: "When you planning to finish task",
   })
-  dueDate!: Date | null;
+  dueDate!: Date;
 
   @ApiProperty({
     example: "2026-05-16T13:45:00.000Z",

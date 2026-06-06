@@ -7,18 +7,18 @@ import SuggestCreateTaskIcon from "../components/ui/icons/SuggestCreateTaskIcon"
 import TaskViewBtnIcon from "../components/ui/icons/TaskViewBtnIcon";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import TaskItem from "../components/ui/TaskItem";
-import type { ITaskResponse } from "../hooks/useTasks";
 import { useUser } from "../hooks/useUser";
+import type { Task } from "../types";
 
 export default function Profile() {
   const { data: user, isLoading: isUserLoading } = useUser();
   const [showBanner, setShowBanner] = useState(true);
   const selectedDate = useOutletContext<string>();
 
-  const { data: allTasks = [], isLoading: isTasksLoading } = useQuery({
+  const { data: allTasks = [], isLoading: isTasksLoading } = useQuery<Task[]>({
     queryKey: ["tasks", "createdAt-desc"],
     queryFn: async () => {
-      const response = await api.get("/tasks", {
+      const response = await api.get<Task[]>("/tasks", {
         params: { sortBy: "createdAt", sortOrder: "desc" },
       });
       return response.data;
@@ -27,8 +27,12 @@ export default function Profile() {
 
   const tasksForSelectedDate = useMemo(() => {
     const targetDateString = selectedDate.split("T")[0];
-    return allTasks.filter((task: ITaskResponse) => {
-      if (!task.dueDate) return false;
+
+    return allTasks.filter((task) => {
+      if (!task.dueDate) {
+        return false;
+      }
+
       return task.dueDate.split("T")[0] === targetDateString;
     });
   }, [allTasks, selectedDate]);
@@ -42,91 +46,83 @@ export default function Profile() {
   }
 
   return (
-    <div className="py-8 px-12">
+    <div className="px-6 lg:px-12 py-8">
       <div className="flex gap-5 pb-8">
         <div className="text-6xl">👋</div>
         <div>
-          <h1 className="font-semibold text-4xl pb-2">Hi {user.name},</h1>
+          <h1 className="pb-2 text-4xl font-semibold">Hi {user.name},</h1>
           <h2 className="text-xl text-secondary-gray">
             Welcome to Semicolon Task Management
           </h2>
         </div>
       </div>
+
       {showBanner && (
-        <div className="relative flex rounded-4xl overflow-hidden mb-12 shadow-md">
+        <div className="relative mb-12 flex overflow-hidden rounded-4xl shadow-md">
           <img
-            className="w-full absolute z-0 h-full object-cover"
+            className="absolute z-0 h-full w-full object-cover"
             src="https://i.ibb.co/6JYb4qSp/Frame-419-2.png"
             alt="Profile banner"
           />
           <button
-            className="absolute top-1 right-5 text-white text-xl cursor-pointer z-20 p-2"
+            type="button"
+            className="absolute top-1 right-5 z-20 cursor-pointer p-2 text-xl text-white"
             onClick={() => setShowBanner(false)}
           >
             ✕
           </button>
-          <div className="flex justify-between w-full py-16 px-10 relative z-10">
-            <div>
-              <p className="text-white text-3xl font-semibold leading-snug">
-                Motivation to help <br /> you work.
-              </p>
-            </div>
-            <div className="flex items-center">
-              <Link to={"/tasks"}>
-                <Button size="lg">Get Started</Button>
-              </Link>
-            </div>
+          <div className="relative z-10 flex w-full justify-between px-10 py-16">
+            <p className="text-xl leading-snug font-semibold text-white">
+              Motivation to help <br /> you work.
+            </p>
+            <Link to="/tasks">
+              <Button size="lg">Get Started</Button>
+            </Link>
           </div>
         </div>
       )}
-      <div>
-        {allTasks.length === 0 ? (
-          <div className="w-full flex flex-col ">
-            <div className="group bg-white rounded-2xl flex items-center justify-between p-5 border-2 border-transparent transition-all duration-200 hover:border-primary-blue">
-              <div className="flex items-center gap-3">
-                <SuggestCreateTaskIcon />
 
-                <p className="text-secondary-gray transition-all duration-200 group-hover:text-primary-blue group-hover:font-semibold">
-                  Create your First Task in your Workspace
-                </p>
-              </div>
-
-              <Link
-                to={`/tasks`}
-                className="text-primary-blue font-semibold flex gap-3 border-b border-transparent transition-all duration-200 hover:border-primary-blue"
-              >
-                Create Task <TaskViewBtnIcon />
-              </Link>
-            </div>
+      {allTasks.length === 0 ? (
+        <div className="group flex items-center justify-between rounded-2xl border-2 border-transparent bg-white p-5 transition-all duration-200 hover:border-primary-blue">
+          <div className="flex items-center gap-3">
+            <SuggestCreateTaskIcon />
+            <p className="text-secondary-gray transition-all duration-200 group-hover:font-semibold group-hover:text-primary-blue">
+              Create your First Task in your Workspace
+            </p>
           </div>
-        ) : tasksForSelectedDate.length === 0 ? (
-          <div className="py-8 px-6 text-center rounded-2xl border-2 border-dashed border-gray-200 text-secondary-gray">
-            No tasks planned for this day. Click on another date in the
-            calendar!
+          <Link
+            to="/tasks"
+            className="flex gap-3 border-b border-transparent font-semibold text-primary-blue transition-all duration-200 hover:border-primary-blue"
+          >
+            Create Task <TaskViewBtnIcon />
+          </Link>
+        </div>
+      ) : tasksForSelectedDate.length === 0 ? (
+        <div className="rounded-2xl border-2 border-dashed border-gray-200 px-6 py-8 text-center text-secondary-gray">
+          No tasks planned for this day. Click on another date in the calendar!
+        </div>
+      ) : (
+        <div>
+          <h2 className="mb-6 text-2xl font-bold text-primary-dark-blue">
+            Tasks for{" "}
+            {new Date(selectedDate).toLocaleDateString("en-US", {
+              month: "long",
+              day: "numeric",
+            })}
+          </h2>
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-5">
+            {tasksForSelectedDate.map((task, index) => (
+              <TaskItem
+                key={task.id}
+                id={task.id}
+                index={index + 1}
+                title={task.title}
+                status={task.status}
+              />
+            ))}
           </div>
-        ) : (
-          <div>
-            <h2 className="text-2xl font-bold text-primary-dark-blue mb-6">
-              Tasks for{" "}
-              {new Date(selectedDate).toLocaleDateString("en-US", {
-                month: "long",
-                day: "numeric",
-              })}
-            </h2>
-            <div className="grid gap-5 grid-cols-5 ">
-              {tasksForSelectedDate.map((task: any, index: number) => (
-                <TaskItem
-                  key={task.id}
-                  id={task.id}
-                  index={index + 1}
-                  title={task.title}
-                  status={task.status}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

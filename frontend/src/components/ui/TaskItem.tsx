@@ -1,8 +1,7 @@
 import { Link } from "react-router-dom";
+import TaskStatusBadge from "../tasks/TaskStatusBadge";
+import type { TaskStatus } from "../../types";
 import TaskViewBtnIcon from "./icons/TaskViewBtnIcon";
-
-export type TaskStatus = "todo" | "in_progress" | "done";
-export type TasksPriority = "low" | "medium" | "high";
 
 interface ITaskCardProps {
   index: number;
@@ -11,37 +10,17 @@ interface ITaskCardProps {
   id: string;
 }
 
-const statusConfig = {
-  todo: {
-    label: "Pending",
-    classes: "text-semantic-warning-yellow bg-amber-50",
-  },
-  in_progress: {
-    label: "In Progress",
-    classes: "text-primary-blue bg-blue-50",
-  },
-  done: {
-    label: "Completed",
-    classes: "text-semantic-success-green bg-green-50",
-  },
-};
-
 export default function TaskItem({ id, index, title, status }: ITaskCardProps) {
-  const currentConfig = statusConfig[status];
   return (
-    <div className="p-5 h-43 bg-white rounded-xl flex flex-col gap-5 max-w-60">
+    <div className="flex h-43 max-w-60 flex-col gap-5 rounded-xl bg-white p-5">
       <div className="flex justify-between">
-        <span className="font-semibold text-sm text-gray-400">T-0{index}</span>
-        <span
-          className={`${currentConfig.classes} px-3 py-1 h-6 rounded-xl text-xs`}
-        >
-          {currentConfig.label}
-        </span>
+        <span className="text-sm font-semibold text-gray-400">T-0{index}</span>
+        <TaskStatusBadge status={status} />
       </div>
-      <p className="font-medium line-clamp-2 h-12">{title}</p>
+      <p className="line-clamp-2 h-12 font-medium">{title}</p>
       <Link
         to={`/tasks/${id}`}
-        className="w-24 text-primary-blue font-semibold text-sm cursor-pointer flex gap-3 border-b border-transparent hover:border-b hover:border-primary-blue"
+        className="flex w-24 cursor-pointer gap-3 border-b border-transparent text-sm font-semibold text-primary-blue hover:border-primary-blue"
       >
         View Task <TaskViewBtnIcon />
       </Link>

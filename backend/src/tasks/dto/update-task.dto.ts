@@ -1,8 +1,15 @@
 import { TaskStatus, TaskPriority } from "@prisma/client";
-import { IsDateString, IsEnum, IsOptional, IsString } from "class-validator";
+import {
+  IsDateString,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from "class-validator";
 
 export class UpdateTaskDto {
   @IsOptional()
+  @IsNotEmpty()
   @IsString({ message: "Title must be string" })
   title?: string;
 

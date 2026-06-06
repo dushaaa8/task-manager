@@ -1,13 +1,13 @@
 import {
-  Injectable,
   ConflictException,
+  Injectable,
   UnauthorizedException,
 } from "@nestjs/common";
-import { UsersService } from "../users/users.service";
-import * as bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
-import { RegisterDto } from "./dto/register.dto";
+import * as bcrypt from "bcrypt";
+import { UsersService } from "../users/users.service";
 import { LoginDto } from "./dto/login.dto";
+import { RegisterDto } from "./dto/register.dto";
 
 @Injectable()
 export class AuthService {
@@ -36,7 +36,7 @@ export class AuthService {
   async login(dto: LoginDto) {
     const user = await this.usersService.findByEmail(dto.email);
     if (!user) {
-      throw new UnauthorizedException("User with this email is not found");
+      throw new UnauthorizedException("Invalid email or password");
     }
 
     const isPasswordValid = await bcrypt.compare(
@@ -44,7 +44,7 @@ export class AuthService {
       user.passwordHash,
     );
     if (!isPasswordValid) {
-      throw new UnauthorizedException("Wrong password");
+      throw new UnauthorizedException("Invalid email or password");
     }
     const payload = { id: user.id };
 

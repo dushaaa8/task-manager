@@ -1,4 +1,10 @@
-import { IsEmail, IsString, MinLength, MaxLength } from "class-validator";
+import {
+  IsEmail,
+  IsString,
+  MinLength,
+  MaxLength,
+  IsNotEmpty,
+} from "class-validator";
 
 export class RegisterDto {
   @IsEmail({}, { message: "Incorrect email format" })
@@ -10,5 +16,7 @@ export class RegisterDto {
   password!: string;
 
   @IsString()
+  @IsNotEmpty({ message: "Name cannot be empty" })
+  @MinLength(2, { message: "Name must be 2 symbols at least" })
   name!: string;
 }

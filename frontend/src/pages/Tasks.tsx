@@ -1,28 +1,16 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import EmptyTasksPlaceholder from "../components/layout/EmptyTasksPlaceholder";
-import Button from "../components/ui/Button";
-import NoTasksFoundIcon from "../components/ui/icons/NoTasksFoundIcon";
+import TasksNotFound from "../components/tasks/TasksNotFound";
+import TasksPageHeader from "../components/tasks/TasksPageHeader";
+import TasksToolbar from "../components/tasks/TasksToolbar";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
-import Selector from "../components/ui/Selector";
-import {
-  TaskFormModal,
-  type TaskFormData,
-} from "../components/ui/TaskFormModal";
-import type { TaskStatus } from "../components/ui/TaskItem";
+import { TaskFormModal } from "../components/ui/TaskFormModal";
 import TaskItem from "../components/ui/TaskItem";
+import { TASK_PRIORITY_FILTER_OPTIONS } from "../constants/taskConfig";
 import { useCreateTask } from "../hooks/useTaskMutation";
 import { useTasksList } from "../hooks/useTasks";
-
-const sortOptions = [
-  { value: "createdAt-desc", label: "Newest First" },
-  { value: "createdAt-asc", label: "Oldest First" },
-  { value: "priority-desc", label: "Highest Priority" },
-  { value: "priority-asc", label: "Lowest Priority" },
-  { value: "title-asc", label: "Title (A-Z)" },
-  { value: "title-desc", label: "Title (Z-A)" },
-  { value: "updatedAt-desc", label: "Recently Updated" },
-];
+import type { TaskFormData } from "../types";
 
 export const Tasks = () => {
   const {
@@ -38,22 +26,49 @@ export const Tasks = () => {
 
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get("search") || "";
-
-  const filteredTasks = displayedTasks.filter((task) => {
-    return task.title.toLowerCase().includes(searchQuery.toLowerCase());
-  });
-
+  const [selectedPriority, setSelectedPriority] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const createMutation = useCreateTask();
 
+  const priorityLabel = useMemo(
+    () =>
+      TASK_PRIORITY_FILTER_OPTIONS.find(
+        (option) => option.value === selectedPriority,
+      )?.label,
+    [selectedPriority],
+  );
+
+  const filteredTasks = useMemo(
+    () =>
+      displayedTasks.filter((task) => {
+        const matchesSearch = task.title
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
+        const matchesPriority = selectedPriority
+          ? task.priority === selectedPriority
+          : true;
+
+        return matchesSearch && matchesPriority;
+      }),
+    [displayedTasks, searchQuery, selectedPriority],
+  );
+
   const handleFormSubmit = (data: TaskFormData) => {
     createMutation.mutate(data, {
-      onSuccess: () => {
-        setIsModalOpen(false);
-      },
+      onSuccess: () => setIsModalOpen(false),
     });
   };
+
+  const taskFormModal = (
+    <TaskFormModal
+      isOpen={isModalOpen}
+      onClose={() => setIsModalOpen(false)}
+      onSubmit={handleFormSubmit}
+      isLoading={createMutation.isPending}
+    />
+  );
+
   if (isLoading) {
     return <LoadingSpinner />;
   }
@@ -62,104 +77,36 @@ export const Tasks = () => {
     return (
       <>
         <EmptyTasksPlaceholder modalFunction={setIsModalOpen} />
-        <TaskFormModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onSubmit={handleFormSubmit}
-          isLoading={createMutation.isPending}
-        />
+        {taskFormModal}
       </>
     );
   }
-  if (filteredTasks.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center pt-40 text-center">
-        <NoTasksFoundIcon />
-        <h2 className="text-2xl font-bold text-primary-dark-blue mb-2">
-          No tasks found
-        </h2>
-        <p className="text-secondary-gray">
-          We couldn't find any tasks matching{" "}
-          <strong className="text-primary-dark-blue">"{searchQuery}"</strong>
-        </p>
-      </div>
-    );
-  }
+
+  const showEmptyCategory = displayedTasks.length === 0;
+  const showEmptyFilters = !showEmptyCategory && filteredTasks.length === 0;
 
   return (
-    <div className="min-h-screen p-12">
-      <div className="mb-10 flex items-end justify-between">
-        <div>
-          <h1 className="mb-2 text-3xl font-bold text-primary-dark-blue">
-            Tasks
-          </h1>
-          <p className="text-secondary-gray">Your tasks in your space.</p>
-        </div>
+    <div className="min-h-screen p-6 lg:p-12">
+      <TasksPageHeader onCreateClick={() => setIsModalOpen(true)} />
+      {taskFormModal}
 
-        <Button onClick={() => setIsModalOpen(true)}>Create Task</Button>
+      <TasksToolbar
+        activeTab={activeTab}
+        counts={counts}
+        sortValue={sortValue}
+        selectedPriority={selectedPriority}
+        onTabChange={setActiveTab}
+        onSortChange={setSortValue}
+        onPriorityChange={setSelectedPriority}
+      />
 
-        <TaskFormModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onSubmit={handleFormSubmit}
-          isLoading={createMutation.isPending}
+      {showEmptyCategory || showEmptyFilters ? (
+        <TasksNotFound
+          searchQuery={showEmptyFilters ? searchQuery : undefined}
+          priorityLabel={showEmptyFilters ? priorityLabel : undefined}
         />
-      </div>
-
-      <div className="flex justify-between w-full h-20 items-end mb-8">
-        <div className="flex gap-8 border-b border-gray-200">
-          {[
-            { id: "all", label: "All Tasks", count: counts.all },
-            { id: "todo", label: "Pending", count: counts.todo },
-            {
-              id: "in_progress",
-              label: "In Progress",
-              count: counts.inProgress,
-            },
-            { id: "done", label: "Completed", count: counts.done },
-          ].map((tab) => {
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as TaskStatus | "all")}
-                className={`flex items-center gap-2 border-b-2 pb-4 text-sm font-medium transition-all cursor-pointer ${
-                  isActive
-                    ? "border-primary-blue text-primary-blue"
-                    : "border-transparent text-secondary-gray"
-                }`}
-              >
-                {tab.label}
-                <span
-                  className={`rounded-full px-2.5 py-0.5 text-xs ${
-                    isActive
-                      ? "bg-blue-50 text-primary-blue"
-                      : "bg-gray-100 text-secondary-gray"
-                  }`}
-                >
-                  {tab.count}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="w-88">
-          <Selector
-            label="Choose sort option"
-            options={sortOptions}
-            value={sortValue}
-            onChange={setSortValue}
-          />
-        </div>
-      </div>
-
-      {displayedTasks.length === 0 ? (
-        <div className="py-12 text-center text-secondary-gray">
-          No tasks found in this category.
-        </div>
       ) : (
-        <div className="grid gap-5 lg:grid-cols-5">
+        <div className="grid gap-5 grid-cols-2 lg:grid-cols-5">
           {filteredTasks.map((task, index) => (
             <TaskItem
               key={task.id}

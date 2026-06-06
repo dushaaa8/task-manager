@@ -28,7 +28,7 @@ export default function Settings() {
   }
 
   return (
-    <div className="p-12 w-full">
+    <div className="p-6 lg:p-12 w-full">
       <div className="flex items-center justify-between mb-10">
         <h1 className="text-3xl font-bold text-primary-dark-blue">Settings</h1>
         <Button

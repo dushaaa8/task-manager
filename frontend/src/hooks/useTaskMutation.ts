@@ -1,16 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { api } from "../api/api";
-import type { TaskFormData } from "../components/ui/TaskFormModal";
-import type { TaskStatus, TasksPriority } from "../components/ui/TaskItem";
-
-interface UpdateTaskPayload {
-  title?: string;
-  description?: string;
-  dueDate?: string;
-  priority?: TasksPriority;
-  status?: TaskStatus;
-}
+import type { TaskFormData, UpdateTaskPayload } from "../types";
 
 export const useUpdateTask = (id: string | undefined) => {
   const queryClient = useQueryClient();

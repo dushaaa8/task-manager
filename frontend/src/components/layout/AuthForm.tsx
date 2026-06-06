@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login, register } from "../../api/auth";
@@ -43,15 +44,15 @@ export default function AuthForm({ mode }: Props) {
         });
       }
 
-      const data = await login({
+      await login({
         email: formData.email,
         password: formData.password,
       });
-
-      localStorage.setItem("token", data.access_token);
       navigate("/tasks");
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Auth error");
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        setError(e.response?.data?.message || "Auth error");
+      }
     } finally {
       setIsLoading(false);
     }

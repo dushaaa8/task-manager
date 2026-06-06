@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import TaskDateField from "../components/tasks/TaskDateField";
+import TaskStatusBadge from "../components/tasks/TaskStatusBadge";
 import Button from "../components/ui/Button";
 import ConfirmModal from "../components/ui/ConfirmModal";
 import BackArrowIcon from "../components/ui/icons/BackArrowIcon";
@@ -8,7 +10,7 @@ import DeleteTaskIcon from "../components/ui/icons/DeleteTaskIcon";
 import EditTaskIcon from "../components/ui/icons/EditTaskIcon";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import { TaskFormModal } from "../components/ui/TaskFormModal";
-import type { TaskStatus } from "../components/ui/TaskItem";
+import { STATUS_DETAIL_CONFIG } from "../constants/statusConfig";
 import { useDeleteTask, useUpdateTask } from "../hooks/useTaskMutation";
 import { useSingleTask } from "../hooks/useTasks";
 
@@ -26,8 +28,22 @@ export const TaskDetails = () => {
   }
 
   if (isError || !task) {
-    return <div>Task not found or Access Denied</div>;
+    return (
+      <div className="flex flex-col items-center justify-center gap-4 p-12 text-center">
+        <h2 className="text-2xl font-bold text-primary-dark-blue">
+          Task not found
+        </h2>
+        <p className="text-secondary-gray">
+          This task does not exist or you do not have access to it.
+        </p>
+        <Link to="/tasks">
+          <Button>Back to Tasks</Button>
+        </Link>
+      </div>
+    );
   }
+
+  const statusConfig = STATUS_DETAIL_CONFIG[task.status];
 
   const handleStatusTransition = () => {
     if (task.status === "todo") {
@@ -37,45 +53,20 @@ export const TaskDetails = () => {
     }
   };
 
-  const getStatusConfig = (status: TaskStatus) => {
-    switch (status) {
-      case "todo":
-        return {
-          btnText: "Work on it Now",
-          badgeText: "Pending",
-          badgeClass: "text-semantic-warning-yellow bg-amber-50",
-          btnDisabled: false,
-        };
-      case "in_progress":
-        return {
-          btnText: "Complete Task",
-          badgeText: "In Progress",
-          badgeClass: "bg-blue-50 text-primary-blue",
-          btnDisabled: false,
-        };
-      case "done":
-        return {
-          btnText: "Task Completed",
-          badgeText: "Completed",
-          badgeClass: "text-semantic-success-green bg-green-50",
-          btnDisabled: true,
-        };
-    }
-  };
-
-  const statusConfig = getStatusConfig(task.status);
-
   return (
-    <div className="p-12 w-full">
-      <div className="flex items-center gap-2 mb-4">
+    <div className="w-full p-6 lg:p-12">
+      {/* Хлебные крошки */}
+      <div className="mb-4 flex flex-wrap items-center gap-2">
         <Link
           to="/tasks"
-          className="text-primary-dark-blue font-semibold text-3xl hover:underline"
+          className="text-3xl font-semibold text-primary-dark-blue hover:underline"
         >
           Tasks
         </Link>
         <BreadcrumbsIcon />
-        <span className="text-primary-dark-blue font-medium">{task.title}</span>
+        <span className="font-medium text-primary-dark-blue break-all">
+          {task.title}
+        </span>
       </div>
 
       <Link
@@ -85,92 +76,71 @@ export const TaskDetails = () => {
         <BackArrowIcon />
       </Link>
 
-      <div className="bg-white rounded-3xl p-10 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-gray-100 flex justify-between gap-12 relative">
-        <div className="flex-1 flex flex-col">
-          <h1 className="text-3xl font-medium mb-4 ">{task.title}</h1>
+      <div className="relative flex flex-col lg:flex-row justify-between gap-8 lg:gap-12 rounded-3xl border border-gray-100 bg-white p-6 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
+        <div className="flex flex-1 flex-col">
+          <h1 className="mb-4 text-3xl font-medium">{task.title}</h1>
 
           <div className="mb-6">
-            <span
-              className={`px-4 py-1.5 rounded-xl text-xs font-semibold ${statusConfig.badgeClass}`}
-            >
-              {statusConfig.badgeText}
-            </span>
+            <TaskStatusBadge status={task.status} size="md" />
           </div>
 
-          <p className="text-secondary-gray mb-12">{task.description}</p>
+          <p className="mb-12 text-secondary-gray whitespace-pre-wrap">
+            {task.description}
+          </p>
 
-          <div className="flex items-center gap-3 mt-auto">
+          <div className="mt-auto flex flex-wrap justify-center lg:justify-start items-center gap-3">
             <Button
               size="lg"
-              className="px-8 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full sm:w-auto px-8 font-medium disabled:cursor-not-allowed disabled:opacity-50 whitespace-nowrap"
               onClick={handleStatusTransition}
               disabled={statusConfig.btnDisabled || updateMutation.isPending}
             >
               {statusConfig.btnText}
             </Button>
 
-            <Button
-              type="button"
-              onClick={() => setIsDeleteOpen(true)}
-              className="flex h-12 w-12 items-center justify-center rounded-xl bg-red-50 transition-colors hover:bg-red-100"
-            >
-              <div>
-                <DeleteTaskIcon />
-              </div>
-            </Button>
+            <div className="flex items-center gap-3 w-full sm:w-auto justify-start">
+              <Button
+                type="button"
+                onClick={() => setIsDeleteOpen(true)}
+                className="flex h-12 w-12 items-center justify-center rounded-xl bg-red-50 transition-colors hover:bg-red-100"
+              >
+                <div>
+                  <DeleteTaskIcon />
+                </div>
+              </Button>
 
-            <Button
-              type="button"
-              onClick={() => setIsEditOpen(true)}
-              className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50! hover:bg-blue-100"
-            >
-              <div>
-                <EditTaskIcon />
-              </div>
-            </Button>
+              <Button
+                type="button"
+                onClick={() => setIsEditOpen(true)}
+                className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50! hover:bg-blue-100"
+              >
+                <div>
+                  <EditTaskIcon />
+                </div>
+              </Button>
+            </div>
           </div>
         </div>
 
-        <div className="w-52 flex flex-col justify-between py-2 relative">
-          <div className="absolute right-3 top-8 bottom-8 w-px bg-gray-200 z-0"></div>
+        <div className="hidden lg:flex relative w-52 flex-col justify-between py-2">
+          <div className="absolute top-8 right-3 bottom-8 z-0 w-px bg-gray-200" />
 
-          <div className="flex items-start justify-end gap-4 relative z-10 text-right">
-            <div>
-              <span className="block text-xs text-secondary-gray text-left font-medium mb-1">
-                Date Created
-              </span>
-              <span className="block text-sm font-bold">
-                {new Date(task.createdAt)
-                  .toLocaleDateString("en-GB", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                  })
-                  .replace(/\//g, " / ")}
-              </span>
-            </div>
+          <TaskDateField label="Date Created" value={task.createdAt} />
 
-            <div className="h-6 w-6 rounded-full border-2 border-primary-blue bg-white flex items-center justify-center mt-1"></div>
+          <div className="mt-16">
+            <TaskDateField label="Due Date" value={task.dueDate} highlighted />
+          </div>
+        </div>
+
+        <div className="lg:hidden w-full flex flex-row items-center justify-between mt-6 pt-6 border-t border-gray-100">
+          <div className="flex justify-start">
+            <TaskDateField label="Date Created" value={task.createdAt} />
           </div>
 
-          <div className="flex items-start justify-end gap-4 relative z-10 text-right mt-16">
-            <div>
-              <span className="block text-left text-xs text-secondary-gray font-medium mb-1">
-                Due Date
-              </span>
-              <span className="block text-sm font-bold text-primary-dark-blue">
-                {new Date(task.dueDate)
-                  .toLocaleDateString("en-GB", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                  })
-                  .replace(/\//g, " / ")}
-              </span>
-            </div>
-            <div className="h-6 w-6 rounded-full border-2 border-primary-blue bg-white flex items-center justify-center mt-1">
-              <div className="h-3 w-3 rounded-full bg-primary-blue"></div>
-            </div>
+          <div className="flex-1 h-px bg-gray-200 mb-2" />
+
+          <div className="flex justify-end [&>div]:flex-row-reverse [&>div]:text-right text-right">
+            <TaskDateField label="Due Date" value={task.dueDate} highlighted />
           </div>
         </div>
       </div>
@@ -185,8 +155,8 @@ export const TaskDetails = () => {
         }
         initialData={{
           title: task.title,
-          description: task.description,
-          dueDate: task.dueDate,
+          description: task.description ?? "",
+          dueDate: task.dueDate ?? "",
           priority: task.priority,
         }}
         isLoading={updateMutation.isPending}
@@ -198,9 +168,11 @@ export const TaskDetails = () => {
         title="Delete Task"
         description={
           <>
-            Are you sure you delete the task{" "}
-            <strong className="text-primary-dark-blue">'{task.title}'</strong>?
-            This task is {task.status === "todo" ? "pending" : "in-progress"}?
+            Are you sure you want to delete the task{" "}
+            <strong className="text-primary-dark-blue">
+              &apos;{task.title}&apos;
+            </strong>
+            ?
           </>
         }
         confirmText="Yes"

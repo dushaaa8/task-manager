@@ -1,6 +1,6 @@
-import { IsEnum, IsOptional, IsString } from "class-validator";
-import { TaskStatus, TaskPriority } from "@prisma/client";
 import { ApiPropertyOptional } from "@nestjs/swagger";
+import { TaskPriority, TaskStatus } from "@prisma/client";
+import { IsEnum, IsOptional, IsString } from "class-validator";
 
 export enum SortOrder {
   ASC = "asc",
@@ -9,6 +9,7 @@ export enum SortOrder {
 export enum SortByField {
   CREATED_AT = "createdAt",
   UPDATED_AT = "updatedAt",
+  DUE_DATE = "dueDate",
   TITLE = "title",
   PRIORITY = "priority",
   STATUS = "status",

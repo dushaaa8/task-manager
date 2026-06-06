@@ -10,6 +10,7 @@ export default function MainHeader() {
   const [searchValue, setSearchValue] = useState(
     searchParams.get("search") || "",
   );
+
   useEffect(() => {
     setSearchValue(searchParams.get("search") || "");
   }, [searchParams]);
@@ -23,15 +24,21 @@ export default function MainHeader() {
       navigate("/tasks");
     }
   };
+
   return (
-    <header className="h-25 flex items-center justify-between px-12 shrink-0">
+    <header className="flex h-25 shrink-0 items-center justify-between px-6 lg:px-12">
       <Input
         className="w-89"
         value={searchValue}
-        placeholder="Seacrh your Tasks here..."
+        placeholder="Search your tasks here..."
         onChange={(e) => setSearchValue(e.target.value)}
         iconRight={<SearchIcon />}
         iconRightFunc={handleSearch}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            handleSearch();
+          }
+        }}
       />
       <NotificationsIcon />
     </header>
